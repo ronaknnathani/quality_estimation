@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+
+# mean absolute error is used as the error metric
+# usage:
+#           ./grade < output
+# the default script and the grader can be executed in pipeline:
+#           ./default | python grade
+
+import optparse
+import numpy as np
+import sys
+
+optparser = optparse.OptionParser()
+optparser.add_option("-g", "--test_gold_labels", dest="test_gold_labels", default="../data/gold_scores/en-es_score.test", help="true labels for test data")
+
+(opts, _) = optparser.parse_args()
+
+pred_labels = np.loadtxt(sys.stdin, dtype = int)
+true_labels = np.loadtxt(opts.test_gold_labels)
+
+assert pred_labels.shape[0] == true_labels.shape[0], "Output is incomplete. Only complete can be graded. Output should be of length: %d" % true_labels.shape[0]
+
+print "\nmean absolute error: ", sum(abs(true_labels - pred_labels))/float(true_labels.shape[0])
