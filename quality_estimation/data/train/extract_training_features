@@ -8,7 +8,7 @@ import sys
 #	Used to extract out the 13 features that will be provided
 # 	by the default system as training features.
 #	The idea is to cut out features f1, f2, f16 and f17 because
-# 	these can be found dynamically by the students to 
+# 	these can be found dynamically by the students too
 
 # Features:
 # 	f1 - number of tokens in the source sentence
