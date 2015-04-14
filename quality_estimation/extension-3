@@ -1,16 +1,27 @@
 #!/usr/bin/env python
+from __future__ import print_function
+
 import optparse
 import sys
+import numpy as np
+from sklearn import datasets
+from sklearn.cross_validation import train_test_split
+from sklearn.grid_search import GridSearchCV
+from sklearn.metrics import mean_absolute_error, make_scorer, mean_squared_error
+from sklearn.metrics import classification_report
+from sklearn.svm import SVC, SVR
 
 optparser = optparse.OptionParser()
-optparser.add_option("-a", "--input1", dest="input1", default="../data/train/all_features.train", help="Full training baseline features list (input)")
-optparser.add_option("-b", "--input2", dest="input2", default="../data/test/all_features.test", help="Full testing baseline features list (input)")
+optparser.add_option("-a", "--input1", dest="input1", default="data-test/all_features.train", help="Full training baseline features list (input)")
+optparser.add_option("-b", "--input2", dest="input2", default="data-test/all_features.test", help="Full testing baseline features list (input)")
 optparser.add_option("-c", "--output1", dest="output1", default="added_grouping.train", help="Added training features list (output)")
 optparser.add_option("-d", "--output2", dest="output2", default="added_grouping.test", help="Added testing features list (output)")
-optparser.add_option("-e", "--source1", dest="source1", default="../data/train/en-es_source.train", help="Source training sentences")
-optparser.add_option("-f", "--source2", dest="source2", default="../data/test/en-es_source.test", help="Source testing sentences")
-optparser.add_option("-g", "--target1", dest="target1", default="../data/train/en-es_target.train", help="Target training sentences")
-optparser.add_option("-i", "--target2", dest="target2", default="../data/test/en-es_target.test", help="Target testing sentences")
+optparser.add_option("-e", "--source1", dest="source1", default="data-train/en-es_source.train", help="Source training sentences")
+optparser.add_option("-f", "--source2", dest="source2", default="data-test/en-es_source.test", help="Source testing sentences")
+optparser.add_option("-g", "--target1", dest="target1", default="data-train/en-es_target.train", help="Target training sentences")
+optparser.add_option("-i", "--target2", dest="target2", default="data-test/en-es_target.test", help="Target testing sentences")
+optparser.add_option("-j", "--labels", dest="labels", default="data-train/en-es_score.train", help="Training Gold scores")
+
 (opts, _) = optparser.parse_args()
 
 def count_words_in_other_targets(target1, target2, target3, target4):
@@ -87,4 +98,21 @@ for x in xrange(0, total_testing_sources):
 for x in xrange(0, total_testing_sources):
   testing_file.write(new_testing_features[(x*4)+3])  
 testing_file.close()
+
+
+# ESTIMATE
+X_train = np.loadtxt(opts.output1, dtype=float, comments=None)
+y_train = np.loadtxt(opts.labels, dtype=float, comments=None)
+X_test = np.loadtxt(opts.output2, dtype=float, comments=None)
+
+tuned_parameters = [{'kernel': ['rbf'], 'gamma': [1e-3, 1e-4], 'C': [1, 10, 100, 1000]}]
+
+clf = GridSearchCV(SVC(C=1), tuned_parameters, cv=5, scoring='mean_absolute_error')
+
+clf.fit(X_train, y_train)
+
+y_pred = clf.predict(X_test)
+
+for prediction in y_pred:
+    print(int(prediction))
 

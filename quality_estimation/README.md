@@ -40,7 +40,7 @@ In the downloaded directory you will find a Python program called `estimate`, wh
 
 To run the quality estimator from the command line, using the following command:
 
-	./estimate > output
+	./default > output
 
 This produces the file `output`, which will contain the scorings for each of the translations in the dataset.  You are then able to score your quality estimator using the following command:
 

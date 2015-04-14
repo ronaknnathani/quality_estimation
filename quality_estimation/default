@@ -17,12 +17,11 @@ from sklearn.cross_validation import cross_val_score
 
 optparser = optparse.OptionParser()
 
-optparser.add_option("-s", "--source", dest="source_sent", default="../data/train/en-es_source.train", help="English source sentences")
-optparser.add_option("-t", "--target", dest="target_sent", default="../data/train/en-es_target.train", help="Spanish target sentences")
-optparser.add_option("-u", "--train_features", dest="train_features", default="../data/train/default_features.train", help="13 baseline features")
-optparser.add_option("-v", "--train_labels", dest="train_labels", default="../data/train/en-es_score.train", help="13 baseline features")
-optparser.add_option("-w", "--test_features", dest="test_features", default="../data/test/default_features.test", help="13 baseline features")
-optparser.add_option("-o", "--test_labels", dest="test_labels", default="../data/test/en-es_pred_score.test", help="13 baseline features")
+optparser.add_option("-s", "--source", dest="source_sent", default="data-train/en-es_source.train", help="English source sentences")
+optparser.add_option("-t", "--target", dest="target_sent", default="data-train/en-es_target.train", help="Spanish target sentences")
+optparser.add_option("-u", "--train_features", dest="train_features", default="data-train/default_features.train", help="13 baseline features")
+optparser.add_option("-v", "--train_labels", dest="train_labels", default="data-train/en-es_score.train", help="13 baseline features")
+optparser.add_option("-w", "--test_features", dest="test_features", default="data-test/default_features.test", help="13 baseline features")
 
 (opts, _) = optparser.parse_args()
 

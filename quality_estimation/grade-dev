@@ -11,7 +11,7 @@ import numpy as np
 import sys
 
 optparser = optparse.OptionParser()
-optparser.add_option("-g", "--test_gold_labels", dest="test_gold_labels", default="../data/gold_scores/en-es_score.test", help="true labels for test data")
+optparser.add_option("-g", "--test_gold_labels", dest="test_gold_labels", default="data-test/en-es_score.test", help="true labels for test data")
 
 (opts, _) = optparser.parse_args()
 
