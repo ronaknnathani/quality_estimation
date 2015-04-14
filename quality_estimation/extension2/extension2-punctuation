@@ -1,0 +1,46 @@
+#!/usr/bin/env python
+import optparse
+import sys
+
+optparser = optparse.OptionParser()
+optparser.add_option("-a", "--input1", dest="input1", default="../data/train/all_features.train", help="Full training baseline features list (input)")
+optparser.add_option("-b", "--input2", dest="input2", default="../data/test/all_features.test", help="Full testing baseline features list (input)")
+optparser.add_option("-c", "--output1", dest="output1", default="added_punctuation.train", help="Added training features list (output)")
+optparser.add_option("-d", "--output2", dest="output2", default="added_punctuation.test", help="Added testing features list (output)")
+optparser.add_option("-e", "--source1", dest="source1", default="../data/train/en-es_source.train", help="Source training sentences")
+optparser.add_option("-f", "--source2", dest="source2", default="../data/test/en-es_source.test", help="Source testing sentences")
+optparser.add_option("-g", "--target1", dest="target1", default="../data/train/en-es_target.train", help="Target training sentences")
+optparser.add_option("-i", "--target2", dest="target2", default="../data/test/en-es_target.test", help="Target testing sentences")
+(opts, _) = optparser.parse_args()
+
+def count_punc(sen, punc):
+  return sen.count(punc)
+
+# TRAINING
+all_data1 = [pair for pair in zip(open(opts.source1), open(opts.target1), open(opts.input1))]
+my_file1 = open(opts.output1, 'w')
+for (source_sen, target_sen, features) in all_data1:
+  # Number of periods in source and target
+  per_in_source = count_punc(source_sen, ".")
+  per_in_target = count_punc(target_sen, ".")
+  # Number of commas in source and target
+  com_in_source = count_punc(source_sen, ",")
+  com_in_target = count_punc(target_sen, ",")
+  # Write the file
+  my_file1.write(features.rstrip() + " " + str(per_in_source) + " " + str(per_in_target) + " " + str(com_in_source) + " " + str(com_in_target) + "\n")
+my_file1.close()
+
+# TESTING
+all_data2 = [pair for pair in zip(open(opts.source2), open(opts.target2), open(opts.input2))]
+my_file2 = open(opts.output2, 'w')
+for (source_sen, target_sen, features) in all_data2:
+  # Number of periods in source and target
+  per_in_source = count_punc(source_sen, ".")
+  per_in_target = count_punc(target_sen, ".")
+  # Number of commas in source and target
+  com_in_source = count_punc(source_sen, ",")
+  com_in_target = count_punc(target_sen, ",")
+  # Write the file
+  my_file2.write(features.rstrip() + " " + str(per_in_source) + " " + str(per_in_target) + " " + str(com_in_source) + " " + str(com_in_target) + "\n")
+my_file2.close()
+
