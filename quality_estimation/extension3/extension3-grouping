@@ -1,0 +1,90 @@
+#!/usr/bin/env python
+import optparse
+import sys
+
+optparser = optparse.OptionParser()
+optparser.add_option("-a", "--input1", dest="input1", default="../data/train/all_features.train", help="Full training baseline features list (input)")
+optparser.add_option("-b", "--input2", dest="input2", default="../data/test/all_features.test", help="Full testing baseline features list (input)")
+optparser.add_option("-c", "--output1", dest="output1", default="added_grouping.train", help="Added training features list (output)")
+optparser.add_option("-d", "--output2", dest="output2", default="added_grouping.test", help="Added testing features list (output)")
+optparser.add_option("-e", "--source1", dest="source1", default="../data/train/en-es_source.train", help="Source training sentences")
+optparser.add_option("-f", "--source2", dest="source2", default="../data/test/en-es_source.test", help="Source testing sentences")
+optparser.add_option("-g", "--target1", dest="target1", default="../data/train/en-es_target.train", help="Target training sentences")
+optparser.add_option("-i", "--target2", dest="target2", default="../data/test/en-es_target.test", help="Target testing sentences")
+(opts, _) = optparser.parse_args()
+
+def count_words_in_other_targets(target1, target2, target3, target4):
+  count1 = 0
+  count2 = 0
+  count3 = 0
+  count4 = 0
+  target1 = target1.split()
+  target2 = target2.split()
+  target3 = target3.split()
+  target4 = target4.split()
+  for word1 in target1:
+    if word1 in target2 or word1 in target3 or word1 in target4:
+      count1 += 1
+  for word2 in target2:
+    if word2 in target1 or word2 in target3 or word2 in target4:
+      count2 += 1
+  for word3 in target3:
+    if word3 in target1 or word3 in target2 or word3 in target4:
+      count3 += 1
+  for word4 in target4:
+    if word4 in target1 or word4 in target2 or word4 in target3:
+      count4 += 1
+  return (count1, count2, count3, count4) 
+
+# TRAINING
+# All translations and their features.
+all_training_translations = [pair for pair in zip(open(opts.target1), open(opts.input1))]
+total_training_sources = len(all_training_translations) / 4
+# Group all translations for a single source.
+grouped_training_translations = [(all_training_translations[x], all_training_translations[x+total_training_sources], all_training_translations[x+(2*total_training_sources)], all_training_translations[x+3*total_training_sources]) for x in range(total_training_sources)]
+# Form a new set of features.
+new_training_features = []
+for grouped_training_translation in grouped_training_translations:
+  (c1, c2, c3, c4) = count_words_in_other_targets(grouped_training_translation[0][0], grouped_training_translation[1][0], grouped_training_translation[2][0], grouped_training_translation[3][0])
+  new_training_features.append(str(grouped_training_translation[0][1]).strip() + " " + str(c1) + "\n")
+  new_training_features.append(str(grouped_training_translation[1][1]).strip() + " " + str(c2) + "\n")
+  new_training_features.append(str(grouped_training_translation[2][1]).strip() + " " + str(c3) + "\n")
+  new_training_features.append(str(grouped_training_translation[3][1]).strip() + " " + str(c4) + "\n")
+# Write the training file.
+training_file = open(opts.output1, 'w')
+for x in xrange(0, total_training_sources):
+  training_file.write(new_training_features[x*4])
+for x in xrange(0, total_training_sources):
+  training_file.write(new_training_features[(x*4)+1])
+for x in xrange(0, total_training_sources):
+  training_file.write(new_training_features[(x*4)+2])
+for x in xrange(0, total_training_sources):
+  training_file.write(new_training_features[(x*4)+3])  
+training_file.close()
+
+# TESTING
+# All translations and their features.
+all_testing_translations = [pair for pair in zip(open(opts.target2), open(opts.input2))]
+total_testing_sources = len(all_testing_translations) / 4
+# Group all translations for a single source.
+grouped_testing_translations = [(all_testing_translations[x], all_testing_translations[x+total_testing_sources], all_testing_translations[x+(2*total_testing_sources)], all_testing_translations[x+3*total_testing_sources]) for x in range(total_testing_sources)]
+# Form a new set of features.
+new_testing_features = []
+for grouped_testing_translation in grouped_testing_translations:
+  (c1, c2, c3, c4) = count_words_in_other_targets(grouped_testing_translation[0][0], grouped_testing_translation[1][0], grouped_testing_translation[2][0], grouped_testing_translation[3][0])
+  new_testing_features.append(str(grouped_testing_translation[0][1]).strip() + " " + str(c1) + "\n")
+  new_testing_features.append(str(grouped_testing_translation[1][1]).strip() + " " + str(c2) + "\n")
+  new_testing_features.append(str(grouped_testing_translation[2][1]).strip() + " " + str(c3) + "\n")
+  new_testing_features.append(str(grouped_testing_translation[3][1]).strip() + " " + str(c4) + "\n")
+# Write the training file.
+testing_file = open(opts.output2, 'w')
+for x in xrange(0, total_testing_sources):
+  testing_file.write(new_testing_features[x*4])
+for x in xrange(0, total_testing_sources):
+  testing_file.write(new_testing_features[(x*4)+1])
+for x in xrange(0, total_testing_sources):
+  testing_file.write(new_testing_features[(x*4)+2])
+for x in xrange(0, total_testing_sources):
+  testing_file.write(new_testing_features[(x*4)+3])  
+testing_file.close()
+
